@@ -20,7 +20,14 @@ app.use(bodyParser.json());
 // Configure AWS if in production
 let dbConfig;
 if (process.env.NODE_ENV === 'production') {
-  dbConfig = configureAWS();
+  dbConfig = {
+    user: process.env.PRODUCTION_DB_USER,
+    host: process.env.PRODUCTION_DB_HOST,
+    database: process.env.PRODUCTION_DB_NAME,
+    password: process.env.PRODUCTION_DB_PASSWORD,
+    port: process.env.PRODUCTION_DB_PORT || 5432,
+    ssl: { rejectUnauthorized: false }
+  };
 } else {
   dbConfig = {
     user: process.env.DB_USER,
