@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { Pool } = require('pg');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
@@ -18,7 +18,18 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Configure AWS if in production
-const dbConfig = configureAWS();
+let dbConfig;
+if (process.env.NODE_ENV === 'production') {
+  dbConfig = configureAWS();
+} else {
+  dbConfig = {
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST || 'host.docker.internal',
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT || 5432,
+  };
+}
 
 // Configure database with AWS or local parameters
 const pool = new Pool(dbConfig);
